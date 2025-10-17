@@ -1,9 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 
-from src.database.db_connection import DatabaseService
-from config import settings
-
+from src.auth.router import router as auth_router
 
 app = FastAPI(
     title="Svetlya4kiAPI",
@@ -14,6 +12,8 @@ app = FastAPI(
         "email": "my@ksalnikov.ru"
     }
 )
+
+app.include_router(auth_router, prefix="/api")
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

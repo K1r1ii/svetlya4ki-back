@@ -9,6 +9,7 @@ class DatabaseService:
     _instance= None
     _lock = Lock()
 
+
     def __new__(cls, dsn: str):
         """ Использование паттерна singleton для создания только одного подключения к БД """
         with cls._lock:
@@ -44,7 +45,10 @@ class DatabaseService:
     def execute_one(self, query: str, params=None):
         """ Выполнение запроса к БД с возвратом одной записи """
         self._ensure_connection()
-        with self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-            cur.execute(query, params)
-            return cur.fetchone()
-
+        try:
+            with self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                cur.execute(query, params)
+                return cur.fetchone()
+        except psycopg2.Error as e:
+            self.conn.rollback()
+            return None
