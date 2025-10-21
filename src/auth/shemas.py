@@ -13,9 +13,20 @@ class AdminRegisterForm(BaseModel):
     email: str = Field(description="Почта")
     password: str = Field(min_length=8, max_length=128, description="Пароль")
 
+
+class UserRegisterForm(BaseModel):
+    """ Форма для регистрации пользователя с токеном приглашения """
+    token: str = Field(description="Токен приглашения")
+    name: str = Field(max_length=32, description="Имя администратора")
+    surname: str = Field(max_length=32, description="Фамилия администратора")
+    phone: str = Field(description="Номер телефона")
+    email: str = Field(description="Почта")
+    password: str = Field(min_length=8, max_length=128, description="Пароль")
+
+
 class CompanyData(BaseModel):
     """ Данные о компании """
-    id: uuid.UUID = Field(description="Идентификатор компании")
+    id: str = Field(description="Идентификатор компании")
     name: str = Field(max_length=128, description="Название компании")
 
 
@@ -29,3 +40,17 @@ class UserPresent(BaseModel):
     email: str = Field(description="Почта")
     is_admin: bool = Field(description="Статус администратора")
     register_at: datetime = Field(description="Дата регистрации")
+
+
+class LoginForm(BaseModel):
+    """ Форма для аутентификации пользователя """
+    email: str = Field(description="Почта")
+    password: str = Field(min_length=8, max_length=128, description="Пароль")
+
+
+class AccessTokenData(BaseModel):
+    access_token: str = Field(description="Токен доступа")
+
+
+class TokensData(AccessTokenData):
+    refresh_token: str = Field(description="Токен восстановления")

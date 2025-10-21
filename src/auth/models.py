@@ -21,3 +21,15 @@ class User:
     password: str
     is_admin: bool
     register_at: datetime
+
+
+@dataclass
+class Invitation:
+    id: uuid.uuid4()
+    company_id: uuid.uuid4()
+    email: str
+    token: str
+    is_used: bool
+    created_at: datetime
+    expire_at: datetime
+

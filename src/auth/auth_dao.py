@@ -1,10 +1,12 @@
-from src.auth.models import User, Company
+from src.auth.models import User, Company, Invitation
+from src.auth.security.password import Password
+from src.auth.shemas import LoginForm
 from src.database.dao import BaseDAO
 
 
 class UserDAO(BaseDAO):
     """ Доступ к таблице пользователей из базы данных """
-    __table_name__="users"
+    _table_name="users"
 
     @classmethod
     def get_by_email(cls, email: str) -> User | None:
@@ -26,12 +28,50 @@ class UserDAO(BaseDAO):
         ))
         return user
 
+    @classmethod
+    def check_user(cls, data: LoginForm) -> User | None:
+        """ Проверка пользователя по почте и паролю """
+        user: User = cls.get_by_email(data.email)
+        if user is None or not Password.verify_password(data.password, user.password):
+            return None
+        return user
+
 
 class CompanyDAO(BaseDAO):
     """ Доступ к таблице компании из базы данных """
-    __table_name__="companies"
+    _table_name="companies"
 
     @classmethod
     def add_one(cls, data: tuple) -> Company:
         """ Добавление новой компании """
         return Company(**cls.db.execute_one("INSERT INTO companies (id, name) VALUES (%s, %s) RETURNING *", data))
+
+    @classmethod
+    def get_name(cls, id: str) -> str:
+        """ Поиск имени компании по id """
+        return cls.db.execute_one("SELECT name FROM companies WHERE id = %s;", (id,)).get("name")
+
+
+class InvitationDAO(BaseDAO):
+    """ Доступ к таблице приглашений из базы данных """
+    _table_name="invitations"
+
+    @classmethod
+    def get_by_token(cls, token: str) -> Invitation | None:
+        """ Получение приглашения по токену """
+        return Invitation(**cls.db.execute_one(
+            "SELECT * FROM invitations WHERE token = %s AND is_used = FALSE AND expire_at > NOW();",
+            (token,)
+        ))
+
+    @classmethod
+    def add_one(cls, data: tuple) -> Invitation:
+        """ Добавление нового приглашения """
+        return Invitation(**cls.db.execute_one(
+            "INSERT INTO invitations (id, company_id, email, token) VALUES(%s, %s, %s, %s) RETURNING *", data)
+        )
+
+    @classmethod
+    def mark_used(cls, id: str):
+        """ Пометка использованного приглашения """
+        cls.db.execute_one("UPDATE invitations SET is_used = TRUE WHERE id = %s;", (id,))
