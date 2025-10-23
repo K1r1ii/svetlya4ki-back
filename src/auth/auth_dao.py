@@ -1,3 +1,5 @@
+import psycopg2
+
 from src.auth.models import User, Company, Invitation
 from src.auth.security.password import Password
 from src.auth.shemas import LoginForm
@@ -59,10 +61,13 @@ class InvitationDAO(BaseDAO):
     @classmethod
     def get_by_token(cls, token: str) -> Invitation | None:
         """ Получение приглашения по токену """
-        return Invitation(**cls.db.execute_one(
+        data = cls.db.execute_one(
             "SELECT * FROM invitations WHERE token = %s AND is_used = FALSE AND expire_at > NOW();",
             (token,)
-        ))
+        )
+        if data is None:
+            return None
+        return Invitation(**data)
 
     @classmethod
     def add_one(cls, data: tuple) -> Invitation:
@@ -74,4 +79,4 @@ class InvitationDAO(BaseDAO):
     @classmethod
     def mark_used(cls, id: str):
         """ Пометка использованного приглашения """
-        cls.db.execute_one("UPDATE invitations SET is_used = TRUE WHERE id = %s;", (id,))
+        cls.db.execute("UPDATE invitations SET is_used = TRUE WHERE id = %s;", (id,), fetch=False)

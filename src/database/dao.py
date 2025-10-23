@@ -8,6 +8,11 @@ class BaseDAO:
     db = DatabaseService(settings.get_db_url)
 
     @classmethod
+    def use_db(cls, db: DatabaseService):
+        """ Смена объекта для работы с БД (для подключения тестовой базы данных) """
+        cls.db = db
+
+    @classmethod
     def get_by_id(cls, id: str) -> dict:
         """ Получить запись по id """
         return cls.db.execute_one(f"SELECT * FROM {cls._table_name} WHERE id = %s", (id, ))

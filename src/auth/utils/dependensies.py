@@ -32,7 +32,13 @@ def get_user_by_token(token_data: dict) -> User:
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Невозможно найти id пользователя в токене доступа"
         )
-    user: User = User(**UserDAO.get_by_id(user_id))
+    data = UserDAO.get_by_id(user_id)
+    if data is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Пользователь не найден"
+        )
+    user: User = User(**data)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

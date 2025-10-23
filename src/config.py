@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     POSTGRES_HOST: str
     POSTGRES_PORT: str
 
+    TEST_DB: str
+
     SECRET_KEY: str
     ALGORITHM: str
 
@@ -30,6 +32,11 @@ class Settings(BaseSettings):
     def get_db_url(self) -> str:
         """DSN базы данных """
         return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+
+    @property
+    def get_test_db_url(self) -> str:
+        """ DSN тестовой базы данных """
+        return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.TEST_DB}"
 
     @property
     def auth_data(self):
