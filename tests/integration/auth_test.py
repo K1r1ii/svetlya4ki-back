@@ -12,7 +12,6 @@ from tests.utils import ADMIN_REGISTER, USER_2_DATA
 @pytest.mark.auth
 class TestAuthService:
     """ Тесты эндпоинтов сервиса авторизации """
-    # TODO: добавить тесты для истекших токенов
 
     # /api/auth/register/admin
     def test_register_admin(self, db, client):

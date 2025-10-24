@@ -39,11 +39,6 @@ def get_user_by_token(token_data: dict) -> User:
             detail="Пользователь не найден"
         )
     user: User = User(**data)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Пользователь не найден"
-        )
     return user
 
 
