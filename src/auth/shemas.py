@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 
 
 class AdminRegisterForm(BaseModel):
@@ -10,7 +10,7 @@ class AdminRegisterForm(BaseModel):
     name: str = Field(max_length=32, description="Имя администратора")
     surname: str = Field(max_length=32, description="Фамилия администратора")
     phone: str = Field(description="Номер телефона")
-    email: str = Field(description="Почта")
+    email: EmailStr = Field(description="Почта")
     password: str = Field(min_length=8, max_length=128, description="Пароль")
 
 
@@ -20,7 +20,7 @@ class UserRegisterForm(BaseModel):
     name: str = Field(max_length=32, description="Имя администратора")
     surname: str = Field(max_length=32, description="Фамилия администратора")
     phone: str = Field(description="Номер телефона")
-    email: str = Field(description="Почта")
+    email: EmailStr = Field(description="Почта")
     password: str = Field(min_length=8, max_length=128, description="Пароль")
 
 
@@ -30,21 +30,25 @@ class CompanyData(BaseModel):
     name: str = Field(max_length=128, description="Название компании")
 
 
-class UserPresent(BaseModel):
-    """ Данные о пользователя для показа """
+class UserBrief(BaseModel):
+    """ Краткая информация о пользователе (для представления в списке) """
     id: uuid.UUID = Field(description="Идентификатор пользователя")
-    company: CompanyData
     name: str = Field(max_length=32, description="Имя пользователя")
     surname: str = Field(max_length=32, description="Фамилия пользователя")
-    phone: str = Field(description="Номер телефона")
-    email: str = Field(description="Почта")
+    email: EmailStr = Field(description="Почта")
     is_admin: bool = Field(description="Статус администратора")
+
+
+class UserPresent(UserBrief):
+    """ Данные о пользователя для показа """
+    company: CompanyData
+    phone: str = Field(description="Номер телефона")
     register_at: datetime = Field(description="Дата регистрации")
 
 
 class LoginForm(BaseModel):
     """ Форма для аутентификации пользователя """
-    email: str = Field(description="Почта")
+    email: EmailStr = Field(description="Почта")
     password: str = Field(min_length=8, max_length=128, description="Пароль")
 
 
@@ -54,3 +58,8 @@ class AccessTokenData(BaseModel):
 
 class TokensData(AccessTokenData):
     refresh_token: str = Field(description="Токен восстановления")
+
+
+class Email(BaseModel):
+    """ Форма для почты пользователя """
+    email: EmailStr = Field(description="Почта пользователя")

@@ -1,9 +1,8 @@
-import psycopg2
-
 from src.auth.models import User, Company, Invitation
 from src.auth.security.password import Password
 from src.auth.shemas import LoginForm
 from src.database.dao import BaseDAO
+from src.profile.schemas import Pagination
 
 
 class UserDAO(BaseDAO):
@@ -37,6 +36,23 @@ class UserDAO(BaseDAO):
         if user is None or not Password.verify_password(data.password, user.password):
             return None
         return user
+
+    @classmethod
+    def get_users_by_company(cls, company_id: str, pagination: Pagination) -> list[dict]:
+        """ Получение списка пользователей одной компании с пагинацией"""
+        return cls.db.execute("SELECT * FROM users WHERE company_id = %s LIMIT %s OFFSET %s;",
+                              (company_id, pagination.count_items, (pagination.page - 1)*pagination.count_items)
+                              )
+
+    @classmethod
+    def get_admins_by_company(cls, company_id: str) -> list[dict]:
+        """ Получение списка администраторов одной компании """
+        return cls.db.execute("SELECT * FROM users WHERE company_id = %s AND is_admin = TRUE;", (company_id,))
+
+    @classmethod
+    def mark_as_admin(cls, id: str):
+        """ Сделать пользователя админом """
+        cls.db.execute("UPDATE users SET is_admin = TRUE WHERE id = %s;", (id,), fetch=False)
 
 
 class CompanyDAO(BaseDAO):
