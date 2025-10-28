@@ -33,6 +33,8 @@ def apply_migrations():
     alembic_cfg = Config("alembic.ini")
     alembic_cfg.set_main_option("sqlalchemy.url", settings.get_test_db_url)
     command.upgrade(alembic_cfg, "head")
+    # yield
+    # alembic_cfg.set_main_option("sqlalchemy.url", settings.get_db_url)
 
 
 @pytest.fixture(scope="function")
