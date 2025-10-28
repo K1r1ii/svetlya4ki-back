@@ -6,7 +6,8 @@ from src.auth.auth_dao import UserDAO, InvitationDAO
 from src.auth.constants import ACCESS_TOKEN_TYPE
 from src.auth.models import User, Invitation
 from src.auth.security.jwt import Jwt
-from src.auth.shemas import AdminRegisterForm, UserPresent, LoginForm, UserRegisterForm, AccessTokenData, TokensData
+from src.auth.shemas import AdminRegisterForm, UserPresent, LoginForm, UserRegisterForm, AccessTokenData, TokensData, \
+    Email
 from src.auth.utils.dependensies import get_current_user_by_access_token, get_current_user_by_refresh_token
 from src.auth.utils.jwt_generate import generate_tokens_pair, invite_token_generate
 from src.auth.utils.services import RegisterService
@@ -51,14 +52,14 @@ def user_register(data: UserRegisterForm) -> UserPresent:
 
 
 @router.post(path="/invite", summary="Генерация приглашения", responses=FORBIDDEN | UNAUTHORIZED)
-async def create_invite(email: dict, user: User = Depends(get_current_user_by_access_token)):
+async def create_invite(email: Email, user: User = Depends(get_current_user_by_access_token)):
     """ Создание приглашения для регистрации пользователя """
     if not user.is_admin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Пользователь не является администратором"
         )
-    check_email: User = UserDAO.get_by_email(email["email"])
+    check_email: User = UserDAO.get_by_email(email.email)
     if check_email:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -66,9 +67,9 @@ async def create_invite(email: dict, user: User = Depends(get_current_user_by_ac
         )
 
     token = invite_token_generate()
-    invitation: Invitation = InvitationDAO.add_one((str(uuid.uuid4()), str(user.company_id), email["email"], token))
+    invitation: Invitation = InvitationDAO.add_one((str(uuid.uuid4()), str(user.company_id), email.email, token))
 
-    await RegisterService.send_invite_email(email["email"], token)
+    await RegisterService.send_invite_email(email.email, token)
     return {"detail": f"Приглашение отправлено на {email}", "token": token}
 
 @router.post(path="/login", summary="Аутентификация пользователя", response_model=TokensData,

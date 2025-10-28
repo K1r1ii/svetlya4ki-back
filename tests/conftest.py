@@ -15,7 +15,16 @@ from src.config import settings
 from src.database.dao import BaseDAO
 from src.database.db_connection import DatabaseService
 from src.main import app
-from tests.utils import COMPANY_DATA_TUPLE, USER_DATA_TUPLE, USER_2_DATA_TUPLE, COMPANY_ID, COMPANY_DATA, USER_ID, USER_2_ID, USER_2_DATA
+from tests.utils import (
+    COMPANY_DATA_TUPLE,
+    USER_DATA_TUPLE,
+    USER_2_DATA_TUPLE,
+    COMPANY_ID,
+    COMPANY_DATA,
+    USER_ID,
+    USER_2_ID,
+    USER_2_DATA
+)
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -88,14 +97,14 @@ def register_user(db, register_company):
 
 
 @pytest.fixture(scope="function")
-def get_admin_headers():
+def get_admin_headers(register_admin):
     """ Получение jwt токена для администратора """
     access_token = Jwt.create_jwt_token({"id": str(USER_ID)}, ACCESS_TOKEN_TYPE)
     return {"Authorization": f"Bearer {access_token}"}
 
 
 @pytest.fixture(scope="function")
-def get_user_headers():
+def get_user_headers(register_user):
     """ Получение jwt токена для пользователя """
     access_token = Jwt.create_jwt_token({"id": str(USER_2_ID)}, ACCESS_TOKEN_TYPE)
     return {"Authorization": f"Bearer {access_token}"}

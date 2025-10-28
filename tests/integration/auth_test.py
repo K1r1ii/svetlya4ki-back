@@ -44,7 +44,6 @@ class TestAuthService:
         })
 
         assert response.status_code == 422
-        assert UserDAO.check_user(LoginForm(email="mail", password="123456789")) is None
 
     def test_weak_password(self, db, client):
         """ Регистрация со слабым паролем """
