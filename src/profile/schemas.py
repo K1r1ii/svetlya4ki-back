@@ -23,8 +23,8 @@ class Message(BaseModel):
 
 class Pagination(BaseModel):
     """ Данные для реализации пагинации списков """
-    page: int = Field(gt=0, description="Номер страницы")
-    count_items: int = Field(ge=1, description="Количество элементов на странице")
+    page: int = Field(ge=1, description="Номер страницы")
+    count_items: int = Field(ge=0, description="Количество элементов на странице")
 
 
 class UsersList(Pagination):

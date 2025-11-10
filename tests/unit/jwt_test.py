@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from src.auth.constants import ACCESS_TOKEN_TYPE, REFRESH_TOKEN_TYPE, TOKEN_TYPE_FIELD
 from src.auth.security.jwt import Jwt
 from src.auth.utils.dependensies import get_user_by_token
-from tests.utils import USER_DATA
+from tests.user_utils import USER_DATA
 
 
 @pytest.mark.jwt_unit

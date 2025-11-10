@@ -6,7 +6,7 @@ import pytest
 from src.auth.auth_dao import UserDAO
 from src.auth.security.jwt import Jwt
 from src.auth.shemas import LoginForm
-from tests.utils import ADMIN_REGISTER, USER_2_DATA
+from tests.user_utils import ADMIN_REGISTER, USER_2_DATA
 
 
 @pytest.mark.auth

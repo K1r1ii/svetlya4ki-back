@@ -2,6 +2,7 @@ import uvicorn
 from fastapi import FastAPI, HTTPException, status, Request
 from src.auth.router import router as auth_router
 from src.profile.router import router as profile_router
+from src.inventory.router import router as inventory_router
 from src.core.exceptions import DatabaseError, DatabaseInternalError
 
 app = FastAPI(
@@ -11,7 +12,7 @@ app = FastAPI(
         "name": "Kirill Salnikov",
         "url": "https://t.me/Klr11111",
         "email": "my@ksalnikov.ru"
-    }
+    },
 )
 
 @app.exception_handler(DatabaseInternalError)
@@ -33,6 +34,7 @@ def db_exception_handler(request: Request, exc: Exception):
 
 app.include_router(auth_router, prefix="/api")
 app.include_router(profile_router, prefix="/api")
+app.include_router(inventory_router, prefix="/api")
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

@@ -3,7 +3,7 @@ import uuid
 import pytest
 
 from src.auth.auth_dao import UserDAO
-from tests.utils import USER_2_ID, USER_DATA
+from tests.user_utils import USER_2_ID, USER_DATA
 
 
 @pytest.mark.profile
