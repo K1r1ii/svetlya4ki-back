@@ -2,7 +2,7 @@ import passlib.exc
 import pytest
 
 from src.auth.security.password import Password
-from tests.utils import USER_DATA
+from tests.user_utils import USER_DATA
 
 
 @pytest.mark.password_unit

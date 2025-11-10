@@ -3,7 +3,7 @@ import uuid
 from fastapi import HTTPException, status
 
 from src.inventory.inventory_dao import CategoryDAO, InventoryDAO
-from src.inventory.models import Inventory, Category
+from src.inventory.models import Inventory
 from src.inventory.schemas import CategoryPresent, AddInventoryForm, InventoryItemPresent
 
 
@@ -23,6 +23,12 @@ class InventoryService:
     @classmethod
     def add_item(cls, data: AddInventoryForm, company_id: uuid.UUID) -> InventoryItemPresent:
         """ Добавление нового элемента в инвентарь """
+        check = InventoryDAO.get_by_name(data.name)
+        if check:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Такой элемент уже существует"
+            )
         temp = (
             str(uuid.uuid4()),
             str(company_id),

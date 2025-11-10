@@ -5,7 +5,7 @@ from fastapi.params import Depends, Query
 
 from src.auth.models import User
 from src.auth.utils.dependensies import get_current_user_by_access_token
-from src.inventory.inventory_dao import InventoryDAO
+from src.inventory.inventory_dao import InventoryDAO, CategoryDAO
 from src.inventory.models import Inventory
 from src.inventory.schemas import (
     InventoryItemPresent,
@@ -56,7 +56,7 @@ def get_items(
         category_filters: list[str] = Query(default=None)
 ):
     """ Получение списка элементов с фильтрами по категориям """
-    # TODO: Сделать текущее количество элементов (после сервиса events)
+    # TODO: Сделать текущее количество элементов (после сервиса events)+
     data = InventoryDAO.get_items(category_filters, pagination)
     return InventoryList(
         items=[InventoryItemPresent(category_data=CategoryPresent(id=item["category_id"], name=item["category_name"]),**item) for item in data],
@@ -112,3 +112,20 @@ def delete_item(item_id: uuid.UUID, user: User = Depends(get_current_user_by_acc
         )
     InventoryDAO.delete_by_id(str(item_id))
     return Message(message="Элемент успешно удален")
+
+@router.delete(path="/category/{category_id}", summary="Удаление категории", response_model=Message)
+def delete_category(category_id: uuid.UUID, user: User = Depends(get_current_user_by_access_token)) -> Message:
+    """ Удаление категории """
+    if not user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Нужно быть администратором для доступа к этому ресурсу"
+        )
+    check = CategoryDAO.get_by_id(str(category_id))
+    if not check:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Категории с таким id не существует"
+        )
+    CategoryDAO.delete_by_id(str(category_id))
+    return Message(message="Категория успешно удалена")

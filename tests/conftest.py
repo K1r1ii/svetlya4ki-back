@@ -15,7 +15,8 @@ from src.config import settings
 from src.database.dao import BaseDAO
 from src.database.db_connection import DatabaseService
 from src.main import app
-from tests.utils import (
+from tests.inventory_utils import CATEGORY_1_TUPLE, ITEM_1_TUPLE
+from tests.user_utils import (
     COMPANY_DATA_TUPLE,
     USER_DATA_TUPLE,
     USER_2_DATA_TUPLE,
@@ -125,3 +126,26 @@ def get_invite_token(register_company):
     token = invite_token_generate()
     invitation: Invitation = InvitationDAO.add_one((str(uuid.uuid4()), str(COMPANY_ID), USER_2_DATA["email"], token))
     return token
+
+
+@pytest.fixture(scope="function")
+def add_category(db, register_company):
+    """ Добавление новой категории """
+    db.execute(
+        "INSERT INTO categories (id, company_id, name) VALUES (%s, %s, %s);",
+        CATEGORY_1_TUPLE,
+        fetch=False
+    )
+
+
+@pytest.fixture(scope="function")
+def add_item(db, add_category):
+    """ Добавление нового элемента """
+    db.execute(
+        """
+            INSERT INTO inventory (id, company_id, category_id, name, total_quantity) 
+            VALUES(%s, %s, %s, %s, %s);
+        """,
+        ITEM_1_TUPLE,
+        fetch=False
+    )

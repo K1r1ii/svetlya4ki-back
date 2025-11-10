@@ -3,7 +3,7 @@ import uuid
 import pytest
 
 from src.core.exceptions import DatabaseInternalError, DatabaseError
-from tests.utils import COMPANY_DATA, COMPANY_DATA_TUPLE, USER_DATA, USER_2_DATA
+from tests.user_utils import COMPANY_DATA, COMPANY_DATA_TUPLE, USER_DATA, USER_2_DATA
 
 @pytest.mark.database
 class TestDatabaseService:

@@ -41,6 +41,12 @@ class InventoryDAO(BaseDAO):
         return item
 
     @classmethod
+    def get_by_name(cls, name: str):
+        """ Получение элемента по имени """
+        return cls.db.execute_one("SELECT * FROM inventory WHERE name = %s;", (name,))
+
+
+    @classmethod
     def get_items(cls, filters: list["str"], pagination: Pagination) -> dict:
         """ Получение списка элементов с фильтром по категориям """
         limit = pagination.count_items
